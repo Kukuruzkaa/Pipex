@@ -1,22 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   ft_memccpy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ddiakova <ddiakova@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/07/15 19:59:15 by ddiakova          #+#    #+#             */
-/*   Updated: 2021/07/15 19:59:19 by ddiakova         ###   ########.fr       */
+/*   Created: 2021/01/05 17:41:44 by ddiakova          #+#    #+#             */
+/*   Updated: 2021/01/25 15:54:21 by ddiakova         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPEX_H
-# define PIPEX_H
-# include <string.h>
-# include <stdlib.h>
-# include <unistd.h>
-# include <stdio.h>
-# include "../Libft/libft.h"
+#include "libft.h"
 
+void	*ft_memccpy(void *dst, const void *src, int c, size_t n)
+{
+	unsigned int			index;
+	unsigned char			*dt;
+	unsigned char			*sc;
 
-#endif
+	dt = (unsigned char *)dst;
+	sc = (unsigned char *)src;
+	index = 0;
+	while (index < n)
+	{
+		dt[index] = sc[index];
+		if (sc[index] == (unsigned char)c)
+			return ((void *)&dt[index + 1]);
+		index++;
+	}
+	return (0);
+}

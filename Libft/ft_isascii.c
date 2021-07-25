@@ -1,22 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   ft_isascii.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ddiakova <ddiakova@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/07/15 19:59:15 by ddiakova          #+#    #+#             */
-/*   Updated: 2021/07/15 19:59:19 by ddiakova         ###   ########.fr       */
+/*   Created: 2021/01/22 13:33:14 by ddiakova          #+#    #+#             */
+/*   Updated: 2021/01/24 15:34:03 by ddiakova         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPEX_H
-# define PIPEX_H
-# include <string.h>
-# include <stdlib.h>
-# include <unistd.h>
-# include <stdio.h>
-# include "../Libft/libft.h"
+#include "libft.h"
 
-
-#endif
+int	ft_isascii(int c)
+{
+	if (c >= 0 && c <= 127)
+		return (1);
+	return (0);
+}

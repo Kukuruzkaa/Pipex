@@ -1,22 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   ft_memmove.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ddiakova <ddiakova@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/07/15 19:59:15 by ddiakova          #+#    #+#             */
-/*   Updated: 2021/07/15 19:59:19 by ddiakova         ###   ########.fr       */
+/*   Created: 2021/01/05 17:41:44 by ddiakova          #+#    #+#             */
+/*   Updated: 2021/01/27 13:06:20 by ddiakova         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPEX_H
-# define PIPEX_H
-# include <string.h>
-# include <stdlib.h>
-# include <unistd.h>
-# include <stdio.h>
-# include "../Libft/libft.h"
+#include "libft.h"
 
+void	*ft_memmove(void *dst, const void *src, size_t len)
+{
+	size_t	index;
+	char	*dest;
+	char	*source;
 
-#endif
+	dest = (char *)dst;
+	source = (char *)src;
+	if (dest == source)
+		return (dest);
+	if (source < dest)
+	{
+		while (len-- > 0)
+		{
+			dest[len] = source[len];
+		}
+	}
+	else
+	{
+		index = 0;
+		while (index < len)
+		{
+			dest[index] = source[index];
+			index++;
+		}
+	}
+	return (dst);
+}
