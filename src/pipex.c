@@ -26,22 +26,46 @@ void		printarray(char *arr)
 	printf("\n");
 }
 
-int		main(int argc, char **argv)
+int		main(int argc, char **argv, char **envp)
 {
-	// char *pathname;
+	// char *getenv;
+	// char **getpath;
 	char **cmd1;
+	// char *tmp;
+	// char *pathname;
+	int 	i;
+	(void) envp; 	
+
+	i = 0;
+	// getenv = NULL;
+	// getpath = NULL;
 	// char **cmd2;
 
-	if (argc == 2)
-	{
-		cmd1 = ft_split(argv[1], ' ');
+	if (!(argc == 5))
+		exit(1);
+	cmd1 = ft_split(argv[2], ' ');
 			// printarray(cmd1[0]);
 		// if (cmd1[1])
 			// printarray(cmd1[1]);
 		// cmd2 = ft_split(argv[2], ' ');
-	}
 	// char* arg[] = {"/bin/pwd", 0};
 	
-	execve("/bin/ls", cmd1, NULL);
+	// while (envp[i])
+	// {
+	// 	if (ft_strnstr(envp[i], "PATH", 4))
+	// 	{
+	// 		envp[i] += 5;
+	// 		getpath = ft_split(envp[i], ':');
+	// 	}
+	// 	i++;    
+	// }
+	// i = 0;
+	// while (getpath[i])
+	// {
+	// 	tmp = ft_strjoin(getpath[i], "/");
+	// 	pathname = ft_strjoin(tmp, *cmd1);
+	// 	i++;
+	// }
+	execve(cmd1[0], cmd1, NULL);
 	return 0;
 }
