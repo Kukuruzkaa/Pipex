@@ -13,9 +13,9 @@
 #include "pipex.h"
 #include <unistd.h>
 #include <stdio.h>
-#define P_STDIN 0
-#define P_STDOUT 0
-#define P_STDERR 0
+#define STDIN 0
+#define STDOUT 1
+#define STDERR 2
 
 
 void		printarray(char *arr)
@@ -32,51 +32,77 @@ void		printarray(char *arr)
 
 int		main(int argc, char **argv, char **envp)
 {
+	// char **cmd1;
+	// char **cmd2;
+	int		fds[2];
+	pid_t 	childpid1;
+	pid_t	childpid2;
+	int 	status;
+	int 	i;
+	(void) envp; 	
+	(void) argv;
+
+	char* arg1[] = {"/bin/ls", 0};
+	char* arg2[] = {"/bin/cat", 0};
+
+	i = 0;
+	
+	pipe(fds);
+	if (pipe(fds) == -1)
+	{
+		write(STDERR, "pipe failed\n", 12);
+		exit(1);
+	}
+
+	if (argc != 5)
+		exit(1);
+
+	// cmd1 = ft_split(argv[2], ' ');
+	// cmd2 = ft_split(argv[3], ' ');
+
+	status = 0;
+	childpid1 = fork();
+	if (childpid1 == -1)
+	{
+		perror("fork child1");
+		exit(1);
+	}
+	if (childpid1 == 0)
+	{
+		write(1, "@\n", 2);
+		close(fds[1]);
+		dup2(fds[0], 0);
+		execve("bin/ls", arg1, NULL);
+	}
+	else 
+	{
+		childpid2 = fork();
+		if (childpid2 == -1)
+		{
+			perror("fork child2");
+			exit(1);
+		}
+		if (childpid2 == 0)
+		{
+			write(1, "&\n", 2);
+			close(fds[0]); 
+			dup2(fds[1], 1);
+			execve("bin/cat", arg2, NULL);
+		}		
+		write(1, "#\n", 2);
+		waitpid(childpid1, &status, 0);
+		waitpid(childpid2, &status, 0);
+		close(fds[0]);
+		close(fds[1]);
+	}
+
 	// char *getenv;
 	// char **getpath;
 	// char *tmp;
 	// char *pathname;
-	char **cmd1;
-	//char **cmd2;
-	int		fds[2];
-	pid_t 	childpid;
-	int 	i;
-	(void) envp; 	
 
-	i = 0;
 	// getenv = NULL;
 	// getpath = NULL;
-
-	pipe(fds);
-
-	if (!(argc == 5))
-		exit(1);
-
-	childpid = fork();
-	if (childpid == -1)
-	{
-		perror("fork");
-		exit(1);
-	}
-	if (childpid == 0)
-	{
-		write(1, "@", 1);
-		cmd2 = ft_split(argv[3], ' ');
-		dup2(0, fds[0]);
-		execve(cmd2[0], cmd2, NULL);
-		close(fds[1]); // child will read from the pipe, no need to write
-		close(fds[0]);
-	}
-	else 
-	{
-		write(1, "#", 1);
-		cmd1 = ft_split(argv[2], ' ');
-		close(fds[0]); //parent does not need to read
-		dup2(0, fds[1]);
-		execve(cmd1[0], cmd1, NULL);
-		waitpid(childpid, NULL, 0);
-		close(fds[1]);
-	// }
 
 	// while (envp[i])
 	// {
@@ -95,5 +121,8 @@ int		main(int argc, char **argv, char **envp)
 	// 	i++;
 	// }
 	
+	// char* arg[] = {"/bin/pwd", 0};
+
+	//execve("/bin/ls", cmd1, NULL);
 	return 0;
 }
