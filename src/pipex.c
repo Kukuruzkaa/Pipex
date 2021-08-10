@@ -32,8 +32,8 @@ void		printarray(char *arr)
 
 int		main(int argc, char **argv, char **envp)
 {
-	// char **cmd1;
-	// char **cmd2;
+	char **cmd1;
+	char **cmd2;
 	int		fds[2];
 	pid_t 	childpid1;
 	pid_t	childpid2;
@@ -42,8 +42,8 @@ int		main(int argc, char **argv, char **envp)
 	(void) envp; 	
 	(void) argv;
 
-	char* arg1[] = {"/bin/ls", 0};
-	char* arg2[] = {"/bin/cat", 0};
+	// char* arg1[] = {"/bin/ls", 0};
+	// char* arg2[] = {"/bin/cat", 0};
 
 	i = 0;
 	
@@ -57,8 +57,8 @@ int		main(int argc, char **argv, char **envp)
 	if (argc != 5)
 		exit(1);
 
-	// cmd1 = ft_split(argv[2], ' ');
-	// cmd2 = ft_split(argv[3], ' ');
+	cmd1 = ft_split(argv[2], ' ');
+	cmd2 = ft_split(argv[3], ' ');
 
 	status = 0;
 	childpid1 = fork();
@@ -70,9 +70,10 @@ int		main(int argc, char **argv, char **envp)
 	if (childpid1 == 0)
 	{
 		write(1, "@\n", 2);
+		close(fds[0]); 
+		dup2(fds[1], 1);
 		close(fds[1]);
-		dup2(fds[0], 0);
-		execve("bin/ls", arg1, NULL);
+		execve(cmd1[0], cmd1, NULL);
 	}
 	else 
 	{
@@ -85,15 +86,19 @@ int		main(int argc, char **argv, char **envp)
 		if (childpid2 == 0)
 		{
 			write(1, "&\n", 2);
-			close(fds[0]); 
-			dup2(fds[1], 1);
-			execve("bin/cat", arg2, NULL);
-		}		
-		write(1, "#\n", 2);
-		waitpid(childpid1, &status, 0);
-		waitpid(childpid2, &status, 0);
-		close(fds[0]);
-		close(fds[1]);
+			close(fds[1]);
+			dup2(fds[0], 0);
+			close(fds[0]);
+			execve(cmd2[0], cmd2, NULL);
+		}
+		else
+		{		
+			write(1, "#\n", 2);
+			close(fds[0]);
+			close(fds[1]);
+			waitpid(childpid1, &status, 0);
+			waitpid(childpid2, &status, 0);
+		}
 	}
 
 	// char *getenv;
