@@ -39,13 +39,14 @@ int		main(int argc, char **argv, char **envp)
 	pid_t	childpid2;
 	int 	status;
 	int 	i;
+	int 	fd_in;
+	int 	fd_out;
 	(void) envp; 	
-	(void) argv;
-
-	// char* arg1[] = {"/bin/ls", 0};
-	// char* arg2[] = {"/bin/cat", 0};
+	// (void) argv;
 
 	i = 0;
+	fd_in = 0;
+	fd_out = 0;
 	
 	pipe(fds);
 	if (pipe(fds) == -1)
@@ -69,8 +70,10 @@ int		main(int argc, char **argv, char **envp)
 	}
 	if (childpid1 == 0)
 	{
-		write(1, "@\n", 2);
+		// write(1, "@\n", 2);
 		close(fds[0]); 
+		dup2(fd_in, 0);
+		close(fd_in);
 		dup2(fds[1], 1);
 		close(fds[1]);
 		execve(cmd1[0], cmd1, NULL);
@@ -85,15 +88,17 @@ int		main(int argc, char **argv, char **envp)
 		}
 		if (childpid2 == 0)
 		{
-			write(1, "&\n", 2);
+			// write(1, "&\n", 2);
 			close(fds[1]);
+			dup2(fd_out, 1);
+			close(fd_out);
 			dup2(fds[0], 0);
 			close(fds[0]);
 			execve(cmd2[0], cmd2, NULL);
 		}
 		else
 		{		
-			write(1, "#\n", 2);
+			// write(1, "#\n", 2);
 			close(fds[0]);
 			close(fds[1]);
 			waitpid(childpid1, &status, 0);
@@ -126,8 +131,5 @@ int		main(int argc, char **argv, char **envp)
 	// 	i++;
 	// }
 	
-	// char* arg[] = {"/bin/pwd", 0};
-
-	//execve("/bin/ls", cmd1, NULL);
 	return 0;
 }
