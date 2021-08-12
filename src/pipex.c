@@ -13,6 +13,7 @@
 #include "pipex.h"
 #include <unistd.h>
 #include <stdio.h>
+#include <fcntl.h>
 #define STDIN 0
 #define STDOUT 1
 #define STDERR 2
@@ -42,18 +43,12 @@ int		main(int argc, char **argv, char **envp)
 	int 	fd_in;
 	int 	fd_out;
 	(void) envp; 	
-	// (void) argv;
 
 	i = 0;
-	fd_in = 0;
-	fd_out = 0;
+	status = 0;
+	// fd_in = 0;
+	// fd_out = 0;
 	
-	pipe(fds);
-	if (pipe(fds) == -1)
-	{
-		write(STDERR, "pipe failed\n", 12);
-		exit(1);
-	}
 
 	if (argc != 5)
 		exit(1);
@@ -61,7 +56,12 @@ int		main(int argc, char **argv, char **envp)
 	cmd1 = ft_split(argv[2], ' ');
 	cmd2 = ft_split(argv[3], ' ');
 
-	status = 0;
+	pipe(fds);
+	if (pipe(fds) == -1)
+	{
+		write(STDERR, "pipe failed\n", 12);
+		exit(1);
+	}
 	childpid1 = fork();
 	if (childpid1 == -1)
 	{
@@ -71,6 +71,9 @@ int		main(int argc, char **argv, char **envp)
 	if (childpid1 == 0)
 	{
 		// write(1, "@\n", 2);
+		fd_in = open(argv[1], O_RDONLY);
+		if (fd_in == -1)
+			perror("invalid fd");
 		close(fds[0]); 
 		dup2(fd_in, 0);
 		close(fd_in);
@@ -89,6 +92,9 @@ int		main(int argc, char **argv, char **envp)
 		if (childpid2 == 0)
 		{
 			// write(1, "&\n", 2);
+			fd_out = open(argv[4], O_WRONLY);
+				if (fd_out == -1)
+			perror("invalid fd");
 			close(fds[1]);
 			dup2(fd_out, 1);
 			close(fd_out);
