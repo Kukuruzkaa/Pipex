@@ -101,8 +101,8 @@ int		main(int argc, char **argv, char **envp)
 		if (fd_in == -1)
 			perror("invalid fd");
 		close(fds[0]); 
-		dup2(fd_in, 0);
-		close(fd_in);
+		//dup2(fd_in, 0);
+		//close(fd_in);
 		dup2(fds[1], 1);
 		// ft_getpath(*cmd1, envp);
 		// if (execve(cmd1[0], cmd1, envp) == -1)
