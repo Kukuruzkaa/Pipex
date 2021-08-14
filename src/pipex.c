@@ -80,12 +80,8 @@ int		main(int argc, char **argv, char **envp)
 
 	if (argc != 5)
 		exit(1);
-	fd_in = open(argv[1], O_RDONLY);
-	if (fd_in == -1)
-		perror("invalid fd");
-	fd_out = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
-	if (fd_out == -1)
-		perror("invalid fd");
+	cmd1 = ft_split(argv[2], ' ');
+	cmd2 = ft_split(argv[3], ' ');
 
 	pipe(fds);
 	if (pipe(fds) == -1)
@@ -101,18 +97,19 @@ int		main(int argc, char **argv, char **envp)
 	}
 	if (childpid1 == 0)
 	{
-		// write(1, "@\n", 2);
-		cmd1 = ft_split(argv[2], ' ');
+		fd_in = open(argv[1], O_RDONLY);
+		if (fd_in == -1)
+			perror("invalid fd");
 		close(fds[0]); 
 		dup2(fd_in, 0);
 		close(fd_in);
 		dup2(fds[1], 1);
 		// ft_getpath(*cmd1, envp);
-		if (execve(cmd1[0], cmd1, envp) == -1)
-			exit(1);
+		// if (execve(cmd1[0], cmd1, envp) == -1)
+			// exit(1);
 			//ivalid command address
 		close(fds[1]);
-		// execve(cmd1[0], cmd1, NULL);
+		execve(cmd1[0], cmd1, NULL);
 	}
 	else 
 	{
@@ -124,22 +121,22 @@ int		main(int argc, char **argv, char **envp)
 		}
 		if (childpid2 == 0)
 		{
-			// write(1, "&\n", 2);
-			close(fds[1]);
-			cmd2 = ft_split(argv[3], ' ');
+			fd_out = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+			if (fd_out == -1)
+				perror("invalid fd");
+			close(fds[1]);	
 			dup2(fd_out, 1);
 			close(fd_out);
 			dup2(fds[0], 0);
 			// ft_getpath(*cmd2, envp);
-			if (execve(cmd2[0], cmd2, envp) == -1)
-				exit(1);
+			// if (execve(cmd2[0], cmd2, envp) == -1)
+				// exit(1);
 			//ivalid command address
 			close(fds[0]);
-			// execve(cmd2[0], cmd2, NULL);
+			execve(cmd2[0], cmd2, NULL);
 		}
 		else
 		{		
-			// write(1, "#\n", 2);
 			close(fds[0]);
 			close(fds[1]);
 			waitpid(childpid1, &status, 0);
