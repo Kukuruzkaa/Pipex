@@ -34,7 +34,7 @@ char 	**ft_getpath(char **envp)
 			envp[i] += 5;
 			getpath = ft_split(envp[i], ':');
 			printf ("%s\n, %s\n, %s\n, %s\n", getpath[0], getpath[1], getpath[2], getpath[4]);
-			// break;
+			break;
 		}
 		i++;    
 	}
@@ -52,7 +52,6 @@ int		main(int argc, char **argv, char **envp)
 	int 	status;
 	int 	fd_in;
 	int 	fd_out;
-	// (void) envp;
 	char **mypath;
 	char *cmd;
 	char *tmp;
@@ -94,14 +93,15 @@ int		main(int argc, char **argv, char **envp)
 			tmp = ft_strjoin(mypath[i], "/");
 			cmd = ft_strjoin(tmp, cmd1[0]);
 			free (tmp);
+			if (access(cmd, X_OK) != -1)
+			{
+				perror("command not found");
+				ft_putstr_fd(argv[2], 2);
+				exit(1);
+			}
 			execve(cmd, cmd1, envp);
 			i++;
 		}
-		// if (execve (cmd, cmd1, envp) == -1)
-		// {
-		// 	perror("command not found");
-		// 	exit(1);
-		// }
 		close(fds[1]);
 	}
 	else 
@@ -129,14 +129,15 @@ int		main(int argc, char **argv, char **envp)
 				tmp = ft_strjoin(mypath[i], "/");
 				cmd = ft_strjoin(tmp, cmd2[0]);
 				free (tmp);
-				(execve(cmd, cmd2, envp));
+				if (access(cmd, X_OK) != -1)
+				{	
+					perror("command not found");
+					ft_putstr_fd(argv[3], 2);
+					exit(1);
+				}
+				execve(cmd, cmd2, envp);
 				i++;
 			}
-			// if (execve (cmd, cmd1, envp) == -1)
-			// {
-			// 	perror("command not found");
-			// 	exit(1);
-			// }
 			close(fds[0]);
 		}
 		else
