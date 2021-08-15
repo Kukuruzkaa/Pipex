@@ -102,9 +102,9 @@ int		main(int argc, char **argv, char **envp)
 		fd_in = open(argv[1], O_RDONLY);
 		if (fd_in == -1)
 			perror("invalid fd");
-		close(fds[0]); 
-		dup2(fd_out, 1);
-		close(fd_out);
+		close(fds[0]); // will write in pipe
+		dup2(fd_in, 0);
+		close(fd_in);
 		dup2(fds[1], 1);
 		// ft_getpath(*cmd1, envp);
 		// if (execve(cmd1[0], cmd1, envp) == -1)
@@ -126,9 +126,9 @@ int		main(int argc, char **argv, char **envp)
 			fd_out = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
 			if (fd_out == -1)
 				perror("invalid fd");
-			close(fds[1]);	
-			dup2(fd_in, 0);
-			close(fd_in);
+			close(fds[1]);
+			dup2(fd_out, 1);
+			close(fd_out);
 			dup2(fds[0], 0);
 			// ft_getpath(*cmd2, envp);
 			// if (execve(cmd2[0], cmd2, envp) == -1)
