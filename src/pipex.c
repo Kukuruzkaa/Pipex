@@ -77,6 +77,8 @@ int		main(int argc, char **argv, char **envp)
 	(void) envp; 	
 
 	status = 0;
+	fd_in = 0;
+	fd_out = 0;
 
 	if (argc != 5)
 		exit(1);
@@ -101,8 +103,8 @@ int		main(int argc, char **argv, char **envp)
 		if (fd_in == -1)
 			perror("invalid fd");
 		close(fds[0]); 
-		//dup2(fd_in, 0);
-		//close(fd_in);
+		dup2(fd_out, 1);
+		close(fd_out);
 		dup2(fds[1], 1);
 		// ft_getpath(*cmd1, envp);
 		// if (execve(cmd1[0], cmd1, envp) == -1)
@@ -125,8 +127,8 @@ int		main(int argc, char **argv, char **envp)
 			if (fd_out == -1)
 				perror("invalid fd");
 			close(fds[1]);	
-			dup2(fd_out, 1);
-			close(fd_out);
+			dup2(fd_in, 0);
+			close(fd_in);
 			dup2(fds[0], 0);
 			// ft_getpath(*cmd2, envp);
 			// if (execve(cmd2[0], cmd2, envp) == -1)
