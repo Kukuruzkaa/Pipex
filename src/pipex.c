@@ -19,16 +19,13 @@
 #define STDERR 2
 
 
-void 	ft_getpath(char *cmd, char **envp)
+char 	**ft_getpath(char **envp)
 {
 	int i;
 	char **getpath;
-	char *pathname;
-	char *tmp;
 
 	i = 0;
 	getpath = NULL;
-	pathname = NULL;
 
 	while (envp[i])
 	{
@@ -36,31 +33,12 @@ void 	ft_getpath(char *cmd, char **envp)
 		{
 			envp[i] += 5;
 			getpath = ft_split(envp[i], ':');
-			break;
+			printf ("%s\n, %s\n, %s\n, %s\n", getpath[0], getpath[1], getpath[2], getpath[4]);
+			// break;
 		}
 		i++;    
 	}
-	i = 0;
-	while (getpath[i])
-	{
-		tmp = ft_strjoin(getpath[i], "/");
-		pathname = ft_strjoin(tmp, cmd);
-		printf ("cmd %s\n", cmd);
-		printf (" pathname %s\n", pathname);
-		i++;
-	}
-	if (execve(pathname, &cmd, envp) != -1)
-	{
-		free(tmp);
-		free(pathname);
-	}
-	else 
-	{
-		perror("Error");
-		exit(1);
-		free(tmp);
-		free(pathname);
-	}
+	return(getpath);
 }
 
 
@@ -74,7 +52,11 @@ int		main(int argc, char **argv, char **envp)
 	int 	status;
 	int 	fd_in;
 	int 	fd_out;
-	(void) envp; 	
+	// (void) envp;
+	char **mypath;
+	char *cmd;
+	char *tmp;
+	int i;
 
 	status = 0;
 	fd_in = 0;
@@ -82,10 +64,8 @@ int		main(int argc, char **argv, char **envp)
 
 	if (argc != 5)
 		exit(1);
-	cmd1 = ft_split(argv[2], ' ');
-	cmd2 = ft_split(argv[3], ' ');
+	
 
-	pipe(fds);
 	if (pipe(fds) == -1)
 	{
 		write(STDERR, "pipe failed\n", 12);
@@ -102,16 +82,27 @@ int		main(int argc, char **argv, char **envp)
 		fd_in = open(argv[1], O_RDONLY);
 		if (fd_in == -1)
 			perror("invalid fd");
-		close(fds[0]); // will write in pipe
+		close(fds[0]);
 		dup2(fd_in, 0);
 		close(fd_in);
 		dup2(fds[1], 1);
-		// ft_getpath(*cmd1, envp);
-		// if (execve(cmd1[0], cmd1, envp) == -1)
-			// exit(1);
-			//ivalid command address
+		cmd1 = ft_split(argv[2], ' ');
+		mypath = ft_getpath(envp);
+		i = 0;
+		while (mypath)
+		{
+			tmp = ft_strjoin(mypath[i], "/");
+			cmd = ft_strjoin(tmp, cmd1[0]);
+			free (tmp);
+			execve(cmd, cmd1, envp);
+			i++;
+		}
+		// if (execve (cmd, cmd1, envp) == -1)
+		// {
+		// 	perror("command not found");
+		// 	exit(1);
+		// }
 		close(fds[1]);
-		execve(cmd1[0], cmd1, NULL);
 	}
 	else 
 	{
@@ -130,12 +121,23 @@ int		main(int argc, char **argv, char **envp)
 			dup2(fd_out, 1);
 			close(fd_out);
 			dup2(fds[0], 0);
-			// ft_getpath(*cmd2, envp);
-			// if (execve(cmd2[0], cmd2, envp) == -1)
-				// exit(1);
-			//ivalid command address
+			cmd2 = ft_split(argv[3], ' ');
+			mypath = ft_getpath(envp);
+			i = 0;
+			while (mypath)
+			{
+				tmp = ft_strjoin(mypath[i], "/");
+				cmd = ft_strjoin(tmp, cmd2[0]);
+				free (tmp);
+				(execve(cmd, cmd2, envp));
+				i++;
+			}
+			// if (execve (cmd, cmd1, envp) == -1)
+			// {
+			// 	perror("command not found");
+			// 	exit(1);
+			// }
 			close(fds[0]);
-			execve(cmd2[0], cmd2, NULL);
 		}
 		else
 		{		
