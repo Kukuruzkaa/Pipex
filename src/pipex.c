@@ -33,7 +33,7 @@ char 	**ft_getpath(char **envp)
 		{
 			envp[i] += 5;
 			getpath = ft_split(envp[i], ':');
-			printf ("%s\n, %s\n, %s\n, %s\n", getpath[0], getpath[1], getpath[2], getpath[4]);
+			// printf ("%s\n, %s\n, %s\n, %s\n", getpath[0], getpath[1], getpath[2], getpath[4]);
 			break;
 		}
 		i++;    
@@ -56,11 +56,12 @@ int		main(int argc, char **argv, char **envp)
 	char *cmd;
 	char *tmp;
 	int i;
+	int access_pathname;
 
 	status = 0;
 	fd_in = 0;
 	fd_out = 0;
-
+	
 	if (argc != 5)
 		exit(1);
 	
@@ -80,7 +81,7 @@ int		main(int argc, char **argv, char **envp)
 	{
 		fd_in = open(argv[1], O_RDONLY);
 		if (fd_in == -1)
-			perror("invalid fd");
+			perror("invalid infile fd");
 		close(fds[0]);
 		dup2(fd_in, 0);
 		close(fd_in);
@@ -88,19 +89,30 @@ int		main(int argc, char **argv, char **envp)
 		cmd1 = ft_split(argv[2], ' ');
 		mypath = ft_getpath(envp);
 		i = 0;
+		access_pathname = 0;
 		while (mypath)
 		{
 			tmp = ft_strjoin(mypath[i], "/");
+			// fprintf (stderr, " tmp : %s\n", tmp);
 			cmd = ft_strjoin(tmp, cmd1[0]);
+			fprintf (stderr, " cmd1 : %s\n", cmd);
 			free (tmp);
-			if (access(cmd, X_OK) != -1)
+			if (!access(cmd, X_OK))
 			{
-				perror("command not found");
-				ft_putstr_fd(argv[2], 2);
-				exit(1);
+				execve(cmd, cmd1, envp);
 			}
-			execve(cmd, cmd1, envp);
+			else
+			{
+				access_pathname = 1;
+				fprintf (stderr, "access2 %d\n", access_pathname);	
+			}                                                                                                                                                                                                       
 			i++;
+		}
+		if (access_pathname == 1)
+		{
+			perror("command not found");
+			ft_putstr_fd(argv[3], 2);
+			exit(1);
 		}
 		close(fds[1]);
 	}
@@ -116,7 +128,7 @@ int		main(int argc, char **argv, char **envp)
 		{
 			fd_out = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
 			if (fd_out == -1)
-				perror("invalid fd");
+				perror("invalid outfile fd");
 			close(fds[1]);
 			dup2(fd_out, 1);
 			close(fd_out);
@@ -124,19 +136,30 @@ int		main(int argc, char **argv, char **envp)
 			cmd2 = ft_split(argv[3], ' ');
 			mypath = ft_getpath(envp);
 			i = 0;
+			access_pathname = 0;
 			while (mypath)
 			{
 				tmp = ft_strjoin(mypath[i], "/");
+				// fprintf (stderr, " tmp : %s\n", tmp);
 				cmd = ft_strjoin(tmp, cmd2[0]);
+				fprintf (stderr, " cmd2 : %s\n", cmd);
 				free (tmp);
-				if (access(cmd, X_OK) != -1)
-				{	
-					perror("command not found");
-					ft_putstr_fd(argv[3], 2);
-					exit(1);
+				if (!access(cmd, X_OK))
+				{
+					execve(cmd, cmd2, envp);
 				}
-				execve(cmd, cmd2, envp);
+				else
+				{
+					access_pathname = 1;
+					fprintf (stderr, "access2 %d\n", access_pathname);	
+				}
 				i++;
+			}
+			if (access_pathname == 1)
+			{
+				perror("command not found");
+				ft_putstr_fd(argv[3], 2);
+				exit(1);
 			}
 			close(fds[0]);
 		}
