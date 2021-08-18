@@ -90,29 +90,28 @@ int		main(int argc, char **argv, char **envp)
 		mypath = ft_getpath(envp);
 		i = 0;
 		access_pathname = 0;
-		while (mypath)
+		while (mypath[i])
 		{
+			// fprintf(stderr, "mypath = %p and i = %d\n", mypath, i);
 			tmp = ft_strjoin(mypath[i], "/");
+			// fprintf(stderr, "mypath[%d] = %s\n", i, mypath[i]);
 			// fprintf (stderr, " tmp : %s\n", tmp);
 			cmd = ft_strjoin(tmp, cmd1[0]);
-			fprintf (stderr, " cmd1 : %s\n", cmd);
+			// fprintf (stderr, " cmd1 : %s\n", cmd);
 			free (tmp);
 			if (!access(cmd, X_OK))
-			{
 				execve(cmd, cmd1, envp);
-			}
 			else
-			{
-				access_pathname = 1;
-				fprintf (stderr, "access2 %d\n", access_pathname);	
-			}                                                                                                                                                                                                       
+				access_pathname = 1;                                                                                                                                                                                                    
 			i++;
 		}
+		// fprintf(stderr, "it is me"); fflush(stderr);
 		if (access_pathname == 1)
 		{
-			perror("command not found");
-			ft_putstr_fd(argv[3], 2);
-			exit(1);
+			// perror("command not found");
+			perror("h");
+			// ft_putstr_fd(argv[3], 2);
+			// exit(1);
 		}
 		close(fds[1]);
 	}
@@ -137,29 +136,26 @@ int		main(int argc, char **argv, char **envp)
 			mypath = ft_getpath(envp);
 			i = 0;
 			access_pathname = 0;
-			while (mypath)
+			while (mypath[i])
 			{
 				tmp = ft_strjoin(mypath[i], "/");
 				// fprintf (stderr, " tmp : %s\n", tmp);
 				cmd = ft_strjoin(tmp, cmd2[0]);
-				fprintf (stderr, " cmd2 : %s\n", cmd);
+				// fprintf (stderr, " cmd2 : %s\n", cmd);
 				free (tmp);
 				if (!access(cmd, X_OK))
-				{
 					execve(cmd, cmd2, envp);
-				}
 				else
-				{
 					access_pathname = 1;
-					fprintf (stderr, "access2 %d\n", access_pathname);	
-				}
 				i++;
 			}
 			if (access_pathname == 1)
 			{
-				perror("command not found");
+				// perror("command not found");
+				// perror("h");
+				ft_putstr_fd("command not found", 2);
 				ft_putstr_fd(argv[3], 2);
-				exit(1);
+				// exit(1);
 			}
 			close(fds[0]);
 		}
