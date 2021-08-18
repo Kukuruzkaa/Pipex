@@ -14,9 +14,9 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <fcntl.h>
-#define STDIN 0
-#define STDOUT 1
-#define STDERR 2
+// #define STDIN 0
+// #define STDOUT 1
+// #define STDERR 2
 
 
 char 	**ft_getpath(char **envp)
@@ -33,7 +33,6 @@ char 	**ft_getpath(char **envp)
 		{
 			envp[i] += 5;
 			getpath = ft_split(envp[i], ':');
-			// printf ("%s\n, %s\n, %s\n, %s\n", getpath[0], getpath[1], getpath[2], getpath[4]);
 			break;
 		}
 		i++;    
@@ -41,6 +40,17 @@ char 	**ft_getpath(char **envp)
 	return(getpath);
 }
 
+void 	freepath(char **tab)
+{
+	int i;
+
+	i = 0;
+	while (tab[i])
+	{
+		free(tab[i]);
+		i++;
+	}
+}
 
 int		main(int argc, char **argv, char **envp)
 {
@@ -63,25 +73,30 @@ int		main(int argc, char **argv, char **envp)
 	fd_out = 0;
 	
 	if (argc != 5)
+	{
+		ft_putstr_fd(": wrong number of arguments", 2);
 		exit(1);
-	
-
+	}
 	if (pipe(fds) == -1)
 	{
-		write(STDERR, "pipe failed\n", 12);
+		perror("Error: pipe failed");
 		exit(1);
 	}
 	childpid1 = fork();
 	if (childpid1 == -1)
 	{
-		perror("fork child1");
+		perror("Error: Failed to fork child process");
 		exit(1);
 	}
 	if (childpid1 == 0)
 	{
 		fd_in = open(argv[1], O_RDONLY);
 		if (fd_in == -1)
-			perror("invalid infile fd");
+		{
+			ft_putstr_fd(argv[1], 2);
+			ft_putstr_fd(": No such file or directory", 2);
+			write (1, "\n", 1);
+		}
 		close(fds[0]);
 		dup2(fd_in, 0);
 		close(fd_in);
@@ -92,12 +107,8 @@ int		main(int argc, char **argv, char **envp)
 		access_pathname = 0;
 		while (mypath[i])
 		{
-			// fprintf(stderr, "mypath = %p and i = %d\n", mypath, i);
 			tmp = ft_strjoin(mypath[i], "/");
-			// fprintf(stderr, "mypath[%d] = %s\n", i, mypath[i]);
-			// fprintf (stderr, " tmp : %s\n", tmp);
 			cmd = ft_strjoin(tmp, cmd1[0]);
-			// fprintf (stderr, " cmd1 : %s\n", cmd);
 			free (tmp);
 			if (!access(cmd, X_OK))
 				execve(cmd, cmd1, envp);
@@ -105,13 +116,15 @@ int		main(int argc, char **argv, char **envp)
 				access_pathname = 1;                                                                                                                                                                                                    
 			i++;
 		}
-		// fprintf(stderr, "it is me"); fflush(stderr);
+		freepath(mypath);
 		if (access_pathname == 1)
 		{
-			// perror("command not found");
-			perror("h");
-			// ft_putstr_fd(argv[3], 2);
-			// exit(1);
+			ft_putstr_fd(argv[2], 2);
+			ft_putstr_fd(": command not found", 2);
+			write (1, "\n", 1);
+			if (cmd)
+				free(cmd);
+			exit(1);
 		}
 		close(fds[1]);
 	}
@@ -120,14 +133,18 @@ int		main(int argc, char **argv, char **envp)
 		childpid2 = fork();
 		if (childpid2 == -1)
 		{
-			perror("fork child2");
+			perror("Error: Failed to fork child process");
 			exit(1);
 		}
 		if (childpid2 == 0)
 		{
 			fd_out = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
 			if (fd_out == -1)
-				perror("invalid outfile fd");
+			{
+				ft_putstr_fd(argv[4], 2);
+				ft_putstr_fd(": No such file or directory", 2);
+				write (1, "\n", 1);
+			}
 			close(fds[1]);
 			dup2(fd_out, 1);
 			close(fd_out);
@@ -139,9 +156,7 @@ int		main(int argc, char **argv, char **envp)
 			while (mypath[i])
 			{
 				tmp = ft_strjoin(mypath[i], "/");
-				// fprintf (stderr, " tmp : %s\n", tmp);
 				cmd = ft_strjoin(tmp, cmd2[0]);
-				// fprintf (stderr, " cmd2 : %s\n", cmd);
 				free (tmp);
 				if (!access(cmd, X_OK))
 					execve(cmd, cmd2, envp);
@@ -149,13 +164,15 @@ int		main(int argc, char **argv, char **envp)
 					access_pathname = 1;
 				i++;
 			}
+			freepath(mypath);
 			if (access_pathname == 1)
 			{
-				// perror("command not found");
-				// perror("h");
-				ft_putstr_fd("command not found", 2);
 				ft_putstr_fd(argv[3], 2);
-				// exit(1);
+				ft_putstr_fd(": command not found", 2);
+				write (1, "\n", 1);
+				if (cmd)
+					free(cmd);
+				exit(1);
 			}
 			close(fds[0]);
 		}
