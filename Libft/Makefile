@@ -63,7 +63,7 @@ BONUS_OBJS		= $(BONUS:.c=.o)
 
 RM 				= rm -f
 
-CFLAGS 			= -Wall -Werror -Wextra -c
+CFLAGS 			= -Wall -Werror -Wextra -c -g
 
 CC				= clang
 

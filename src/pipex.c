@@ -14,6 +14,8 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 // #define STDIN 0
 // #define STDOUT 1
 // #define STDERR 2
@@ -50,6 +52,7 @@ void 	freepath(char **tab)
 		free(tab[i]);
 		i++;
 	}
+	// free(tab[i]);
 }
 
 int		main(int argc, char **argv, char **envp)
@@ -71,6 +74,11 @@ int		main(int argc, char **argv, char **envp)
 	status = 0;
 	fd_in = 0;
 	fd_out = 0;
+	mypath = NULL;
+	cmd = NULL;
+	tmp = NULL;
+	cmd1 = NULL;
+	cmd2 = NULL;
 	
 	if (argc != 5)
 	{
@@ -96,12 +104,27 @@ int		main(int argc, char **argv, char **envp)
 			ft_putstr_fd(argv[1], 2);
 			ft_putstr_fd(": No such file or directory", 2);
 			write (1, "\n", 1);
+			if (cmd)
+				free(cmd);
+			exit (1);
 		}
 		close(fds[0]);
 		dup2(fd_in, 0);
 		close(fd_in);
 		dup2(fds[1], 1);
 		cmd1 = ft_split(argv[2], ' ');
+		if (!cmd1)
+		{
+			free(cmd1);
+			ft_putstr_fd("cmd1: command not found", 2);
+			exit (1);
+		}
+		if (cmd1[0] == 0)
+		{
+			free(cmd2);
+			ft_putstr_fd("cmd2: command not found", 2);
+			exit (1);
+		}
 		mypath = ft_getpath(envp);
 		i = 0;
 		access_pathname = 0;
@@ -123,7 +146,10 @@ int		main(int argc, char **argv, char **envp)
 			ft_putstr_fd(": command not found", 2);
 			write (1, "\n", 1);
 			if (cmd)
+			{
 				free(cmd);
+				cmd = NULL;
+			}
 			exit(1);
 		}
 		close(fds[1]);
@@ -144,17 +170,31 @@ int		main(int argc, char **argv, char **envp)
 				ft_putstr_fd(argv[4], 2);
 				ft_putstr_fd(": No such file or directory", 2);
 				write (1, "\n", 1);
+				exit (1);
 			}
 			close(fds[1]);
 			dup2(fd_out, 1);
 			close(fd_out);
 			dup2(fds[0], 0);
 			cmd2 = ft_split(argv[3], ' ');
+			if (!cmd2)
+			{
+				free(cmd2);
+				ft_putstr_fd("cmd2: command not found", 2);
+				exit (1);
+			}
+			if (cmd2[0] == 0)
+			{
+				free(cmd2);
+				ft_putstr_fd("cmd2: command not found", 2);
+				exit (1);
+			}
 			mypath = ft_getpath(envp);
 			i = 0;
 			access_pathname = 0;
 			while (mypath[i])
 			{
+				fprintf (stderr, "trtr\n"); fflush(stderr);
 				tmp = ft_strjoin(mypath[i], "/");
 				cmd = ft_strjoin(tmp, cmd2[0]);
 				free (tmp);
@@ -164,14 +204,18 @@ int		main(int argc, char **argv, char **envp)
 					access_pathname = 1;
 				i++;
 			}
+			fprintf (stderr, "toto=\n"); fflush(stderr);
 			freepath(mypath);
+			fprintf (stderr, "tototo\n"); fflush(stderr);
 			if (access_pathname == 1)
 			{
 				ft_putstr_fd(argv[3], 2);
 				ft_putstr_fd(": command not found", 2);
 				write (1, "\n", 1);
+				fprintf (stderr, "toto\n"); fflush(stderr);
 				if (cmd)
 					free(cmd);
+				fprintf (stderr, "tata\n"); fflush(stderr);
 				exit(1);
 			}
 			close(fds[0]);

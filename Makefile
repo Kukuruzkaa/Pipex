@@ -35,7 +35,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	${CC} ${CFLAGS} -I./inc -c $< -o $@
 
 $(LIBFT):
-				@make bonus -s -C Libft
+				@make bonus -C Libft
 
 $(NAME):		$(OBJS) $(LIBFT)
 				$(CC) -o $(NAME) $(OBJS) Libft/libft.a
