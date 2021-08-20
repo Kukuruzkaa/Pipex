@@ -113,7 +113,7 @@ int		main(int argc, char **argv, char **envp)
 		{
 			free(cmd1);
 			ft_putstr_fd("cmd1: command not found", 2);
-			exit (1);
+			exit (127);
 		}
 		mypath = ft_getpath(envp);
 		i = 0;
@@ -137,8 +137,7 @@ int		main(int argc, char **argv, char **envp)
 		{
 			ft_putstr_fd(argv[2], 2);
 			ft_putstr_fd(": command not found", 2);
-			write (1, "\n", 1);
-			exit(1);
+			exit(127);
 		}
 		close(fds[1]);
 	}
@@ -168,8 +167,8 @@ int		main(int argc, char **argv, char **envp)
 			if (!cmd2 || cmd2[0] == 0)
 			{
 				free(cmd2);
-				ft_putstr_fd("cmd2: command not found", 2);
-				exit (1);
+				ft_putstr_fd(": command not found", 2);
+				exit (127);
 			}
 			mypath = ft_getpath(envp);
 			i = 0;
@@ -193,8 +192,7 @@ int		main(int argc, char **argv, char **envp)
 			{
 				ft_putstr_fd(argv[3], 2);
 				ft_putstr_fd(": command not found", 2);
-				write (1, "\n", 1);
-				exit(1);
+				exit(127);
 			}
 			close(fds[0]);
 		}
