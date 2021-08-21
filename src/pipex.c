@@ -20,8 +20,7 @@ void	ft_child_in(char **envp, char **argv, int fds[2])
 	cmd1 = NULL;
 	fd_in = 0;
 	fd_in = open(argv[1], O_RDONLY);
-	if (fd_in == -1)
-		ft_print_error_and_exit(argv[1], 0);
+	ft_check_fd(fd_in, argv[1]);
 	close(fds[0]);
 	dup2(fd_in, 0);
 	close(fd_in);
@@ -32,7 +31,13 @@ void	ft_child_in(char **envp, char **argv, int fds[2])
 		free(cmd1);
 		ft_print_error_and_exit(argv[2], 1);
 	}
-	ft_add_mypath(envp, argv[2], cmd1, 0);
+	if (cmd1[0][0] == '/')
+	{
+		if (execve(argv[2], cmd1, envp) == -1)
+			ft_print_error_and_exit(argv[2], 1);
+	}
+	else
+		ft_add_mypath(envp, argv[2], cmd1, 0);
 	close(fds[1]);
 }
 
@@ -44,8 +49,7 @@ void	ft_child_out(char **envp, char **argv, int fds[2])
 	cmd2 = NULL;
 	fd_out = 0;
 	fd_out = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
-	if (fd_out == -1)
-		ft_print_error_and_exit(argv[4], 0);
+	ft_check_fd(fd_out, argv[4]);
 	close(fds[1]);
 	dup2(fd_out, 1);
 	close(fd_out);
@@ -56,7 +60,13 @@ void	ft_child_out(char **envp, char **argv, int fds[2])
 		free(cmd2);
 		ft_print_error_and_exit(argv[3], 1);
 	}
-	ft_add_mypath(envp, argv[3], cmd2, 0);
+	if (cmd2[0][0] == '/')
+	{
+		if (execve(argv[3], cmd2, envp) == -1)
+			ft_print_error_and_exit(argv[3], 1);
+	}
+	else
+		ft_add_mypath(envp, argv[3], cmd2, 0);
 	close(fds[0]);
 }
 

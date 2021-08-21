@@ -6,7 +6,7 @@
 /*   By: ddiakova <ddiakova@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/15 19:59:15 by ddiakova          #+#    #+#             */
-/*   Updated: 2021/08/21 17:47:22 by ddiakova         ###   ########.fr       */
+/*   Updated: 2021/08/21 18:41:18 by ddiakova         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,5 +27,6 @@ void	ft_check_argc(int argc);
 void	ft_print_error_and_exit(char *argv, int index);
 void	ft_check_pipe(int fds[2]);
 void	ft_check_childpid(pid_t childpid);
+void	ft_check_fd(int fd, char *argv);
 
 #endif
