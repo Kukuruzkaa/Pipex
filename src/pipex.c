@@ -6,203 +6,91 @@
 /*   By: ddiakova <ddiakova@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/15 19:57:30 by ddiakova          #+#    #+#             */
-/*   Updated: 2021/07/15 19:57:34 by ddiakova         ###   ########.fr       */
+/*   Updated: 2021/08/21 17:39:51 by ddiakova         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include <unistd.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/wait.h>
 
-
-char 	**ft_getpath(char **envp)
+void	ft_child_in(char **envp, char **argv, int fds[2])
 {
-	int i;
-	char **getpath;
+	char	**cmd1;
+	int		fd_in;
 
-	i = 0;
-	getpath = NULL;
-
-	while (envp[i])
+	cmd1 = NULL;
+	fd_in = 0;
+	fd_in = open(argv[1], O_RDONLY);
+	if (fd_in == -1)
+		ft_print_error_and_exit(argv[1], 0);
+	close(fds[0]);
+	dup2(fd_in, 0);
+	close(fd_in);
+	dup2(fds[1], 1);
+	cmd1 = ft_split(argv[2], ' ');
+	if (!cmd1 || cmd1[0] == 0)
 	{
-		if (ft_strncmp(envp[i], "PATH", 4) == 0)
-		{
-			envp[i] += 5;
-			getpath = ft_split(envp[i], ':');
-			break;
-		}
-		i++;    
+		free(cmd1);
+		ft_print_error_and_exit(argv[2], 1);
 	}
-	return(getpath);
+	ft_add_mypath(envp, argv[2], cmd1, 0);
+	close(fds[1]);
 }
 
-void 	freepath(char **tab)
+void	ft_child_out(char **envp, char **argv, int fds[2])
 {
-	int i;
+	char	**cmd2;
+	int		fd_out;
 
-	i = 0;
-	
-	while (tab[i])
+	cmd2 = NULL;
+	fd_out = 0;
+	fd_out = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	if (fd_out == -1)
+		ft_print_error_and_exit(argv[4], 0);
+	close(fds[1]);
+	dup2(fd_out, 1);
+	close(fd_out);
+	dup2(fds[0], 0);
+	cmd2 = ft_split(argv[3], ' ');
+	if (!cmd2 || cmd2[0] == 0)
 	{
-		free(tab[i]);
-		i++;
+		free(cmd2);
+		ft_print_error_and_exit(argv[3], 1);
 	}
-	free(tab);
+	ft_add_mypath(envp, argv[3], cmd2, 0);
+	close(fds[0]);
 }
 
-int		main(int argc, char **argv, char **envp)
+void	ft_close_parent(int fds[2], pid_t childpid1, pid_t childpid2,
+		int status)
 {
-	char **cmd1;
-	char **cmd2;
+	close(fds[0]);
+	close(fds[1]);
+	waitpid(childpid1, &status, 0);
+	waitpid(childpid2, &status, 0);
+}
+
+int	main(int argc, char **argv, char **envp)
+{
 	int		fds[2];
-	pid_t 	childpid1;
+	pid_t	childpid1;
 	pid_t	childpid2;
-	int 	status;
-	int 	fd_in;
-	int 	fd_out;
-	char **mypath;
-	char *cmd;
-	char *tmp;
-	int i;
-	int access_pathname;
+	int		status;
 
 	status = 0;
-	fd_in = 0;
-	fd_out = 0;
-	mypath = NULL;
-	cmd = NULL;
-	tmp = NULL;
-	cmd1 = NULL;
-	cmd2 = NULL;
-	
-	if (argc != 5)
-	{
-		ft_putstr_fd(": wrong number of arguments", 2);
-		exit(1);
-	}
-	if (pipe(fds) == -1)
-	{
-		perror("Error: pipe failed");
-		exit(1);
-	}
+	ft_check_argc(argc);
+	ft_check_pipe(fds);
 	childpid1 = fork();
-	if (childpid1 == -1)
-	{
-		perror("Error: Failed to fork child process");
-		exit(1);
-	}
+	ft_check_childpid(childpid1);
 	if (childpid1 == 0)
-	{
-		fd_in = open(argv[1], O_RDONLY);
-		if (fd_in == -1)
-		{
-			ft_putstr_fd(argv[1], 2);
-			ft_putstr_fd(": No such file or directory", 2);
-			write (1, "\n", 1);
-			exit (1);
-		}
-		close(fds[0]);
-		dup2(fd_in, 0);
-		close(fd_in);
-		dup2(fds[1], 1);
-		cmd1 = ft_split(argv[2], ' ');
-		if (!cmd1 || cmd1[0] == 0)
-		{
-			free(cmd1);
-			ft_putstr_fd("cmd1: command not found", 2);
-			exit (127);
-		}
-		mypath = ft_getpath(envp);
-		i = 0;
-		access_pathname = 0;
-		while (mypath[i])
-		{
-			tmp = ft_strjoin(mypath[i], "/");
-			cmd = ft_strjoin(tmp, cmd1[0]);
-			free (tmp);
-			if (!access(cmd, X_OK))
-				execve(cmd, cmd1, envp);
-			else
-				access_pathname = 1;
-				if (cmd)
-					free(cmd);                                                                                                                                                                                             
-			i++;
-		}
-		freepath(mypath);
-		freepath(cmd1);
-		if (access_pathname == 1)
-		{
-			ft_putstr_fd(argv[2], 2);
-			ft_putstr_fd(": command not found", 2);
-			exit(127);
-		}
-		close(fds[1]);
-	}
-	else 
+		ft_child_in(envp, argv, fds);
+	else
 	{
 		childpid2 = fork();
-		if (childpid2 == -1)
-		{
-			perror("Error: Failed to fork child process");
-			exit(1);
-		}
+		ft_check_childpid(childpid2);
 		if (childpid2 == 0)
-		{
-			fd_out = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
-			if (fd_out == -1)
-			{
-				ft_putstr_fd(argv[4], 2);
-				ft_putstr_fd(": No such file or directory", 2);
-				write (1, "\n", 1);
-				exit (1);
-			}
-			close(fds[1]);
-			dup2(fd_out, 1);
-			close(fd_out);
-			dup2(fds[0], 0);
-			cmd2 = ft_split(argv[3], ' ');
-			if (!cmd2 || cmd2[0] == 0)
-			{
-				free(cmd2);
-				ft_putstr_fd(": command not found", 2);
-				exit (127);
-			}
-			mypath = ft_getpath(envp);
-			i = 0;
-			access_pathname = 0;
-			while (mypath[i])
-			{
-				tmp = ft_strjoin(mypath[i], "/");
-				cmd = ft_strjoin(tmp, cmd2[0]);
-				free (tmp);
-				if (!access(cmd, X_OK))
-					execve(cmd, cmd2, envp);
-				else
-					access_pathname = 1;
-					if (cmd)
-						free(cmd);
-				i++;
-			}
-			freepath(mypath);
-			freepath(cmd2);
-			if (access_pathname == 1)
-			{
-				ft_putstr_fd(argv[3], 2);
-				ft_putstr_fd(": command not found", 2);
-				exit(127);
-			}
-			close(fds[0]);
-		}
+			ft_child_out(envp, argv, fds);
 		else
-		{		
-			close(fds[0]);
-			close(fds[1]);
-			waitpid(childpid1, &status, 0);
-			waitpid(childpid2, &status, 0);
-		}
+			ft_close_parent(fds, childpid1, childpid2, status);
 	}
-	return 0;
+	return (0);
 }

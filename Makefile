@@ -15,6 +15,8 @@ NAME			= pipex
 LIBFT 			= Libft/libft.a
 
 SRCS 			= pipex.c \
+				check_and_print_errors.c \
+				pipex_utils.c \
 
 OBJS			= $(SRCS:%.c=%.o)
 
