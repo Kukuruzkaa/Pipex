@@ -70,13 +70,28 @@ void	ft_child_out(char **envp, char **argv, int fds[2])
 	close(fds[0]);
 }
 
-void	ft_close_parent(int fds[2], pid_t childpid1, pid_t childpid2,
-		int status)
+// void	ft_close_parent(int fds[2], pid_t childpid1, pid_t childpid2,
+// 		int status)
+// {
+// 	close(fds[0]);
+// 	close(fds[1]);
+// 	waitpid(childpid1, &status, 0);
+// 	waitpid(childpid2, &status, 0);
+//}
+
+// int 	ft_check_waitpid(pid_t childpid, int *status)
+// {
+// 	if (waitpid(childpid, status, 0) == -1 || WIFEXITED(status))
+// 		if (WEXITSTATUS(status))
+// 			return(WEXITSTATUS(status));
+// 	return (0);
+// }
+
+int printWaitStatus(int status)
 {
-	close(fds[0]);
-	close(fds[1]);
-	waitpid(childpid1, &status, 0);
-	waitpid(childpid2, &status, 0);
+    if (WIFEXITED(status))
+        return(WEXITSTATUS(status));
+	return (0);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -84,9 +99,9 @@ int	main(int argc, char **argv, char **envp)
 	int		fds[2];
 	pid_t	childpid1;
 	pid_t	childpid2;
-	int		status;
+	int		wstatus;
 
-	status = 0;
+	wstatus = 0;
 	ft_check_argc(argc);
 	ft_check_pipe(fds);
 	childpid1 = fork();
@@ -100,7 +115,46 @@ int	main(int argc, char **argv, char **envp)
 		if (childpid2 == 0)
 			ft_child_out(envp, argv, fds);
 		else
-			ft_close_parent(fds, childpid1, childpid2, status);
+		{
+			close(fds[0]);
+			close(fds[1]);
+			if (waitpid(childpid2, &wstatus, WUNTRACED | WCONTINUED) == -1) 
+			{
+        		perror("waitpid");
+        		exit(EXIT_FAILURE);
+			}
+			printWaitStatus(wstatus);
+			exit(EXIT_SUCCESS);
+			// if (ft_check_waitpid(childpid1, &status) >= 1)
+			// 	return(WEXITSTATUS(status));
+			// 
+			// while (WIFEXITED(status) && WIFSIGNALED(status))
+			// {
+			// 	if (waitpid(childpid1, &status, WUNTRACED | WCONTINUED) == -1)
+			// 	{
+			// 		perror("waitpid");
+			// 		exit(EXIT_FAILURE);
+			// 	}
+			// 	else if (WIFEXITED(status))
+			// 		return(WEXITSTATUS(status));
+			// }
+			// while (WIFEXITED(status) && WIFSIGNALED(status))
+			// {
+			// 	if (waitpid(childpid2, &status, WUNTRACED | WCONTINUED) == -1)
+			// 	{
+			// 		perror("waitpid");
+			// 		exit(EXIT_FAILURE);
+			// 	}
+			// 	else if (WIFEXITED(status))
+			// 		return(WEXITSTATUS(status));
+		}
+		if (waitpid(childpid1, &wstatus, WUNTRACED | WCONTINUED) == -1) 
+			{
+        		perror("waitpid");
+        		exit(EXIT_FAILURE);
+			}
+			printWaitStatus(wstatus);
+			exit(EXIT_SUCCESS);
 	}
 	return (0);
 }
