@@ -51,6 +51,8 @@ void	ft_add_mypath(char **envp, char *argv, char **cmds, int access_pathname, in
 	char	*cmd;
 	char	*tmp;
 	char	**mypath;
+	(void)index;
+	(void)argv;
 
 	i = -1;
 	cmd = NULL;
@@ -69,7 +71,11 @@ void	ft_add_mypath(char **envp, char *argv, char **cmds, int access_pathname, in
 			free(cmd);
 	}
 	if (access_pathname == 1)
-		ft_print_error_and_exit(argv, index);
+	{
+		ft_putstr_fd(argv, 2);
+		perror(": command not found");
+		exit(1);
+	}
 	ft_freepath(mypath);
 	ft_freepath(cmds);
 }

@@ -35,6 +35,7 @@ void	ft_print_error_and_exit(char *argv, int index)
 		ft_putstr_fd(": command not found\n", 2);
 		exit(127);
 	}
+	
 }
 
 void	ft_check_pipe(int fds[2])
@@ -61,7 +62,7 @@ void 	ft_check_fd(int fd, char *argv)
 	{
 		ft_putstr_fd(argv, 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
-		exit(0);
+		exit(1);
 	}
 }
 
