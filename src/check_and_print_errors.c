@@ -6,7 +6,7 @@
 /*   By: ddiakova <ddiakova@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/21 17:44:18 by ddiakova          #+#    #+#             */
-/*   Updated: 2021/08/21 17:44:55 by ddiakova         ###   ########.fr       */
+/*   Updated: 2021/08/24 00:02:30 by ddiakova         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ void	ft_print_error_and_exit(char *argv, int index)
 		ft_putstr_fd(": command not found\n", 2);
 		exit(127);
 	}
-	
 }
 
 void	ft_check_pipe(int fds[2])
@@ -56,7 +55,7 @@ void	ft_check_childpid(pid_t childpid)
 	}
 }
 
-void 	ft_check_fd(int fd, char *argv)
+void	ft_check_fd(int fd, char *argv)
 {
 	if (fd == -1)
 	{
@@ -65,4 +64,3 @@ void 	ft_check_fd(int fd, char *argv)
 		exit(1);
 	}
 }
-

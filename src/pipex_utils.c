@@ -6,7 +6,7 @@
 /*   By: ddiakova <ddiakova@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/21 17:40:28 by ddiakova          #+#    #+#             */
-/*   Updated: 2021/08/21 17:44:07 by ddiakova         ###   ########.fr       */
+/*   Updated: 2021/08/24 00:03:16 by ddiakova         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,11 +45,11 @@ char	**ft_getpath(char **envp)
 	return (path);
 }
 
-void 	ft_exec_error_print(char *argv)
+void	ft_exec_error_print(char *argv)
 {
-		ft_putstr_fd(argv, 2);
-		ft_putstr_fd(": command not found\n", 2);
-		exit(1);
+	ft_putstr_fd(argv, 2);
+	ft_putstr_fd(": command not found\n", 2);
+	exit(1);
 }
 
 void	ft_add_mypath(char **envp, char *argv, char **cmds, int access_pathname)

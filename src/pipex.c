@@ -6,7 +6,7 @@
 /*   By: ddiakova <ddiakova@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/15 19:57:30 by ddiakova          #+#    #+#             */
-/*   Updated: 2021/08/21 17:39:51 by ddiakova         ###   ########.fr       */
+/*   Updated: 2021/08/24 00:01:26 by ddiakova         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,14 @@ void	ft_child_out(char **envp, char **argv, int fds[2])
 	close(fds[0]);
 }
 
+int	ft_check_wait_and_status(pid_t child, int *status)
+{
+	waitpid(child, status, 0);
+	if (WIFEXITED(status))
+		if (WEXITSTATUS(status))
+			return (WEXITSTATUS(status));
+	return (0);
+}
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -92,27 +100,22 @@ int	main(int argc, char **argv, char **envp)
 		if (childpid2 == 0)
 		{
 			ft_child_out(envp, argv, fds);
-			waitpid(childpid1, &wstatus, 0);
-			if (WIFEXITED(wstatus))
-			{
-				if (WEXITSTATUS(wstatus))
-					return (WEXITSTATUS(wstatus));
-			}	
+			// waitpid(childpid1, &wstatus, 0);
+			ft_check_wait_and_status(childpid1, &wstatus);
+			// if (WIFEXITED(wstatus))
+			// 	if (WEXITSTATUS(wstatus))
+			// 		return (WEXITSTATUS(wstatus));
 		}
 		else
 		{
 			close(fds[0]);
 			close(fds[1]);
-			waitpid(childpid2, &wstatus, 0);
-			if (WIFEXITED(wstatus))
-			{
-				if (WEXITSTATUS(wstatus))
-					return (WEXITSTATUS(wstatus));
-			}
+			// waitpid(childpid2, &wstatus, 0);
+			ft_check_wait_and_status(childpid2, &wstatus);
+			// if (WIFEXITED(wstatus))
+			// 	if (WEXITSTATUS(wstatus))
+			// 		return (WEXITSTATUS(wstatus));
 		}
-		
-	}	
+	}
 	return (0);
 }
-
-
