@@ -34,15 +34,10 @@ void	ft_child_in(char **envp, char **argv, int fds[2])
 	if (cmd1[0][0] == '/')
 	{
 		if (execve(argv[2], cmd1, envp) == -1)
-		{
 			ft_print_error_and_exit(argv[2], 1);
-			exit(1);
-			// return (EXIT_FAILURE);
-			// ft_print_error_and_exit(argv[2], 1);
-		}
 	}
 	else
-		ft_add_mypath(envp, argv[2], cmd1, 0, 1);
+		ft_add_mypath(envp, argv[2], cmd1, 0);
 	close(fds[1]);
 }
 
@@ -68,23 +63,13 @@ void	ft_child_out(char **envp, char **argv, int fds[2])
 	if (cmd2[0][0] == '/')
 	{
 		if (execve(argv[3], cmd2, envp) == -1)
-		{
 			ft_print_error_and_exit(argv[3], 2);
-			exit(1);
-		}
 	}
 	else
-		ft_add_mypath(envp, argv[3], cmd2, 0, 2);
+		ft_add_mypath(envp, argv[3], cmd2, 0);
 	close(fds[0]);
 }
 
-
-int printWaitStatus(int status)
-{
-    if (WIFEXITED(status))
-        return(WEXITSTATUS(status));
-	return (0);
-}
 
 int	main(int argc, char **argv, char **envp)
 {
