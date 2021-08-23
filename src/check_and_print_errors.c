@@ -23,13 +23,13 @@ void	ft_check_argc(int argc)
 
 void	ft_print_error_and_exit(char *argv, int index)
 {
-	if (index == 0)
+	if (index == 1)
 	{
 		ft_putstr_fd(argv, 2);
-		ft_putstr_fd(": No such file or directory\n", 2);
-		exit (0);
+		ft_putstr_fd(": command not found\n", 2);
+		exit(0);
 	}
-	else if (index == 1)
+	else if (index == 2)
 	{
 		ft_putstr_fd(argv, 2);
 		ft_putstr_fd(": command not found\n", 2);
@@ -58,6 +58,10 @@ void	ft_check_childpid(pid_t childpid)
 void 	ft_check_fd(int fd, char *argv)
 {
 	if (fd == -1)
-		ft_print_error_and_exit(argv, 0);
+	{
+		ft_putstr_fd(argv, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		exit(0);
+	}
 }
 

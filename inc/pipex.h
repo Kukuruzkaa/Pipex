@@ -22,7 +22,7 @@
 void	ft_freepath(char **tab);
 char	**ft_getpath(char **envp);
 void	ft_add_mypath(char **envp, char *argv, char **cmds,
-			int access_pathname);
+			int access_pathname, int index);
 void	ft_check_argc(int argc);
 void	ft_print_error_and_exit(char *argv, int index);
 void	ft_check_pipe(int fds[2]);

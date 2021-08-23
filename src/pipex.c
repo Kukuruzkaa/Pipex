@@ -37,7 +37,7 @@ void	ft_child_in(char **envp, char **argv, int fds[2])
 			ft_print_error_and_exit(argv[2], 1);
 	}
 	else
-		ft_add_mypath(envp, argv[2], cmd1, 0);
+		ft_add_mypath(envp, argv[2], cmd1, 0, 1);
 	close(fds[1]);
 }
 
@@ -58,15 +58,15 @@ void	ft_child_out(char **envp, char **argv, int fds[2])
 	if (!cmd2 || cmd2[0] == 0)
 	{
 		free(cmd2);
-		ft_print_error_and_exit(argv[3], 1);
+		ft_print_error_and_exit(argv[3], 2);
 	}
 	if (cmd2[0][0] == '/')
 	{
 		if (execve(argv[3], cmd2, envp) == -1)
-			ft_print_error_and_exit(argv[3], 1);
+			ft_print_error_and_exit(argv[3], 2);
 	}
 	else
-		ft_add_mypath(envp, argv[3], cmd2, 0);
+		ft_add_mypath(envp, argv[3], cmd2, 0, 2);
 	close(fds[0]);
 }
 
@@ -77,11 +77,11 @@ void	ft_child_out(char **envp, char **argv, int fds[2])
 // 	close(fds[1]);
 // 	waitpid(childpid1, &status, 0);
 // 	waitpid(childpid2, &status, 0);
-//}
+// }
 
-// int 	ft_check_waitpid(pid_t childpid, int *status)
+// int 	ft_check_waitpid(pid_t childpid, int status)
 // {
-// 	if (waitpid(childpid, status, 0) == -1 || WIFEXITED(status))
+// 	if (waitpid(childpid, &status, WUNTRACED | WCONTINUED) == -1 || WIFEXITED(status))
 // 		if (WEXITSTATUS(status))
 // 			return(WEXITSTATUS(status));
 // 	return (0);
@@ -113,48 +113,27 @@ int	main(int argc, char **argv, char **envp)
 		childpid2 = fork();
 		ft_check_childpid(childpid2);
 		if (childpid2 == 0)
+		{
 			ft_child_out(envp, argv, fds);
+			waitpid(childpid1, &wstatus, 0);
+			if (WIFEXITED(wstatus))
+			{
+				if (WEXITSTATUS(wstatus))
+					return (WEXITSTATUS(wstatus));
+			}	
+		}
 		else
 		{
 			close(fds[0]);
 			close(fds[1]);
-			if (waitpid(childpid2, &wstatus, WUNTRACED | WCONTINUED) == -1) 
+			waitpid(childpid2, &wstatus, 0);
+			if (WIFEXITED(wstatus))
 			{
-        		perror("waitpid");
-        		exit(EXIT_FAILURE);
+				if (WEXITSTATUS(wstatus))
+					return (WEXITSTATUS(wstatus));
 			}
-			printWaitStatus(wstatus);
-			exit(EXIT_SUCCESS);
-			// if (ft_check_waitpid(childpid1, &status) >= 1)
-			// 	return(WEXITSTATUS(status));
-			// 
-			// while (WIFEXITED(status) && WIFSIGNALED(status))
-			// {
-			// 	if (waitpid(childpid1, &status, WUNTRACED | WCONTINUED) == -1)
-			// 	{
-			// 		perror("waitpid");
-			// 		exit(EXIT_FAILURE);
-			// 	}
-			// 	else if (WIFEXITED(status))
-			// 		return(WEXITSTATUS(status));
-			// }
-			// while (WIFEXITED(status) && WIFSIGNALED(status))
-			// {
-			// 	if (waitpid(childpid2, &status, WUNTRACED | WCONTINUED) == -1)
-			// 	{
-			// 		perror("waitpid");
-			// 		exit(EXIT_FAILURE);
-			// 	}
-			// 	else if (WIFEXITED(status))
-			// 		return(WEXITSTATUS(status));
 		}
-		if (waitpid(childpid1, &wstatus, WUNTRACED | WCONTINUED) == -1) 
-			{
-        		perror("waitpid");
-        		exit(EXIT_FAILURE);
-			}
-			printWaitStatus(wstatus);
-			exit(EXIT_SUCCESS);
-	}
+		
+	}	
 	return (0);
 }

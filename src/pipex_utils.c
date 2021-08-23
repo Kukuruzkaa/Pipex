@@ -45,7 +45,7 @@ char	**ft_getpath(char **envp)
 	return (path);
 }
 
-void	ft_add_mypath(char **envp, char *argv, char **cmds, int access_pathname)
+void	ft_add_mypath(char **envp, char *argv, char **cmds, int access_pathname, int index)
 {
 	int		i;
 	char	*cmd;
@@ -69,7 +69,7 @@ void	ft_add_mypath(char **envp, char *argv, char **cmds, int access_pathname)
 			free(cmd);
 	}
 	if (access_pathname == 1)
-		ft_print_error_and_exit(argv, 1);
+		ft_print_error_and_exit(argv, index);
 	ft_freepath(mypath);
 	ft_freepath(cmds);
 }
