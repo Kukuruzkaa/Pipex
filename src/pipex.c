@@ -73,49 +73,19 @@ void	ft_child_out(char **envp, char **argv, int fds[2])
 int	ft_check_wait_and_status(pid_t child, int *status)
 {
 	waitpid(child, status, 0);
-	if (WIFEXITED(status))
-		if (WEXITSTATUS(status))
-			return (WEXITSTATUS(status));
+	if (WIFEXITED(*status))
+		if (WEXITSTATUS(*status))
+			return (WEXITSTATUS(*status));
 	return (0);
 }
 
-int	main(int argc, char **argv, char **envp)
+int	ft_check_status_close_parent(int fds[2], pid_t child, int *status)
 {
-	int		fds[2];
-	pid_t	childpid1;
-	pid_t	childpid2;
-	int		wstatus;
-
-	wstatus = 0;
-	ft_check_argc(argc);
-	ft_check_pipe(fds);
-	childpid1 = fork();
-	ft_check_childpid(childpid1);
-	if (childpid1 == 0)
-		ft_child_in(envp, argv, fds);
-	else
-	{
-		childpid2 = fork();
-		ft_check_childpid(childpid2);
-		if (childpid2 == 0)
-		{
-			ft_child_out(envp, argv, fds);
-			// waitpid(childpid1, &wstatus, 0);
-			ft_check_wait_and_status(childpid1, &wstatus);
-			// if (WIFEXITED(wstatus))
-			// 	if (WEXITSTATUS(wstatus))
-			// 		return (WEXITSTATUS(wstatus));
-		}
-		else
-		{
-			close(fds[0]);
-			close(fds[1]);
-			// waitpid(childpid2, &wstatus, 0);
-			ft_check_wait_and_status(childpid2, &wstatus);
-			// if (WIFEXITED(wstatus))
-			// 	if (WEXITSTATUS(wstatus))
-			// 		return (WEXITSTATUS(wstatus));
-		}
-	}
+	close(fds[0]);
+	close(fds[1]);
+	waitpid(child, status, 0);
+	if (WIFEXITED(*status))
+		if (WEXITSTATUS(*status))
+			return (WEXITSTATUS(*status));
 	return (0);
 }

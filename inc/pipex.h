@@ -28,5 +28,9 @@ void	ft_print_error_and_exit(char *argv, int index);
 void	ft_check_pipe(int fds[2]);
 void	ft_check_childpid(pid_t childpid);
 void	ft_check_fd(int fd, char *argv);
+void	ft_child_in(char **envp, char **argv, int fds[2]);
+void	ft_child_out(char **envp, char **argv, int fds[2]);
+int		ft_check_wait_and_status(pid_t child, int *status);
+int		ft_check_status_close_parent(int fds[2], pid_t child, int *status);
 
 #endif
