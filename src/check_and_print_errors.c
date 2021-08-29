@@ -16,7 +16,7 @@ void	ft_check_argc(int argc)
 {
 	if (argc != 5)
 	{
-		ft_putstr_fd(": wrong number of arguments", 2);
+		ft_putstr_fd(": wrong number of arguments\n", 2);
 		exit(1);
 	}
 }
