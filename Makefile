@@ -17,6 +17,7 @@ LIBFT 			= Libft/libft.a
 SRCS 			= pipex.c \
 				check_and_print_errors.c \
 				pipex_utils.c \
+				get_pwd.c \
 				main.c \
 
 OBJS			= $(SRCS:%.c=%.o)

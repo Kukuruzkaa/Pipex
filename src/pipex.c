@@ -27,9 +27,8 @@ void	ft_child_in(char **envp, char **argv, int fds[2])
 	int		fd_in;
 
 	cmd1 = NULL;
-	fd_in = 0;
 	fd_in = open(argv[1], O_RDONLY);
-	ft_check_rights(argv[1]);
+	ft_check_rights(envp, argv[1]);
 	ft_check_fd(fd_in, argv[1]);
 	close(fds[0]);
 	dup2(fd_in, 0);

@@ -55,13 +55,3 @@ void	ft_check_fd(int fd, char *argv)
 		exit(1);
 	}
 }
-
-void	ft_check_rights(char *argv)
-{
-	if (access(argv, R_OK) == -1)
-	{
-		ft_putstr_fd(argv, 1);
-		ft_putstr_fd(": Permission denied\n", 2);
-		exit(127);
-	}
-}
