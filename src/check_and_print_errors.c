@@ -12,15 +12,6 @@
 
 #include "pipex.h"
 
-void	ft_check_argc(int argc)
-{
-	if (argc != 5)
-	{
-		ft_putstr_fd(": wrong number of arguments\n", 2);
-		exit(1);
-	}
-}
-
 void	ft_print_error_and_exit(char *argv, int index)
 {
 	if (index == 1)
@@ -62,5 +53,15 @@ void	ft_check_fd(int fd, char *argv)
 		ft_putstr_fd(argv, 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
 		exit(1);
+	}
+}
+
+void	ft_check_rights(char *argv)
+{
+	if (access(argv, R_OK) == -1)
+	{
+		ft_putstr_fd(argv, 1);
+		ft_putstr_fd(": Permission denied\n", 2);
+		exit(127);
 	}
 }

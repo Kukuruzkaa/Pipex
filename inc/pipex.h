@@ -33,5 +33,6 @@ void	ft_child_out(char **envp, char **argv, int fds[2]);
 int		ft_check_wait_and_status(pid_t child, int *status);
 int		ft_check_status_close_parent(int fds[2], pid_t child, int *status);
 void	ft_free(char **mypath, char **cmds, char *argv);
+void	ft_check_rights(char *argv);
 
 #endif

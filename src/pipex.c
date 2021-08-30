@@ -12,6 +12,15 @@
 
 #include "pipex.h"
 
+void	ft_check_argc(int argc)
+{
+	if (argc != 5)
+	{
+		ft_putstr_fd("Error: wrong number of arguments\n", 2);
+		exit(1);
+	}
+}
+
 void	ft_child_in(char **envp, char **argv, int fds[2])
 {
 	char	**cmd1;
@@ -20,6 +29,7 @@ void	ft_child_in(char **envp, char **argv, int fds[2])
 	cmd1 = NULL;
 	fd_in = 0;
 	fd_in = open(argv[1], O_RDONLY);
+	ft_check_rights(argv[1]);
 	ft_check_fd(fd_in, argv[1]);
 	close(fds[0]);
 	dup2(fd_in, 0);
