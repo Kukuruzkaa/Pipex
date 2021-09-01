@@ -30,7 +30,7 @@ char	*ft_get_pwd(char **envp)
 	return (ppath);
 }
 
-void	ft_check_rights(char **envp, char *argv)
+void	ft_check_rights(char **envp, char *argv, int fd)
 {
 	char	*pwd;
 	char	*buff;
@@ -42,11 +42,17 @@ void	ft_check_rights(char **envp, char *argv)
 	buff = ft_strjoin(file_path, "/");
 	pwd = ft_strjoin(buff, argv);
 	free (buff);
-	if (access(pwd, R_OK) == -1)
+	if (fd < 0 && access(pwd, F_OK) == 0)
 	{
 		ft_putstr_fd(argv, 1);
 		ft_putstr_fd(": Permission denied\n", 2);
 		free(pwd);
-		exit(127);
+		exit(1);
+	}
+	else if (fd < 0)
+	{		
+		ft_putstr_fd(argv, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		exit(1);
 	}
 }

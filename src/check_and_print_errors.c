@@ -48,7 +48,7 @@ void	ft_check_childpid(pid_t childpid)
 
 void	ft_check_fd(int fd, char *argv)
 {
-	if (fd == -1)
+	if (fd < 0)
 	{
 		ft_putstr_fd(argv, 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
