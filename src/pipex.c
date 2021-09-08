@@ -57,7 +57,7 @@ void	ft_child_out(char **envp, char **argv, int fds[2])
 	cmd2 = NULL;
 	fd_out = 0;
 	fd_out = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
-	ft_check_fd(fd_out, argv[4]);
+	ft_check_rights(envp, argv[4], fd_out);
 	close(fds[1]);
 	dup2(fd_out, 1);
 	close(fd_out);
