@@ -46,13 +46,13 @@ void	ft_check_rights(char **envp, char *argv, int fd)
 	{
 		ft_putstr_fd(argv, 1);
 		ft_putstr_fd(": Permission denied\n", 2);
-		free(pwd);
-		exit(1);
 	}
 	else if (fd < 0)
 	{		
 		ft_putstr_fd(argv, 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
-		exit(1);
 	}
+	free(pwd);
+	if (fd < 0)
+		exit(1);
 }
